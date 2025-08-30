@@ -1,0 +1,159 @@
+{
+  "designSystemProfile": {
+    "name": "HabiTide & Todos App",
+    "version": "1.0.0",
+    "description": "A design system for a modern, dark-themed productivity and habit-tracking mobile application.",
+    "theme": "dark"
+  },
+  "visualStyle": {
+    "colorPalette": {
+      "primary": {
+        "main": "#007AFF",
+        "description": "Bright blue for primary actions like buttons, FABs, and active states."
+      },
+      "secondary": {
+        "mediumPriority": "#FF9500",
+        "description": "Orange/yellow for highlighting medium priority items."
+      },
+      "background": {
+        "default": "#121212",
+        "description": "Main dark background for all screens."
+      },
+      "surface": {
+        "main": "#1E1E1E",
+        "light": "#2C2C2E",
+        "description": "Slightly lighter shades for cards, input fields, and modals to create depth."
+      },
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "#8E8E93",
+        "placeholder": "#636366",
+        "onPrimary": "#FFFFFF",
+        "description": "Colors for main text, less important text, and text on colored backgrounds."
+      },
+      "status": {
+        "error": "#FF3B30",
+        "success": "#34C759",
+        "warning": "#FFCC00",
+        "info": "#007AFF"
+      },
+      "icons": {
+        "default": "#8E8E93",
+        "active": "#FFFFFF"
+      }
+    },
+    "typography": {
+      "fontFamily": "San Francisco (SF Pro Text), Roboto, sans-serif",
+      "styles": [
+        {
+          "name": "ScreenTitle",
+          "fontSize": "28px",
+          "fontWeight": "700",
+          "description": "For main screen titles like 'Todos' or 'Add New Todo'."
+        },
+        {
+          "name": "SectionHeader",
+          "fontSize": "17px",
+          "fontWeight": "600",
+          "color": "text.primary",
+          "description": "For titles of sections like 'Priority', 'Category'."
+        },
+        {
+          "name": "Body",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "text.primary",
+          "description": "Standard text for descriptions, labels, and list items."
+        },
+        {
+          "name": "Subtext",
+          "fontSize": "14px",
+          "fontWeight": "400",
+          "color": "text.secondary",
+          "description": "For secondary information, captions, and helper text."
+        },
+        {
+          "name": "ButtonText",
+          "fontSize": "17px",
+          "fontWeight": "600",
+          "color": "text.onPrimary",
+          "description": "Text used within primary buttons."
+        }
+      ]
+    },
+    "iconography": {
+      "style": "Solid and Line icons with a consistent stroke width.",
+      "size": "24x24px (standard), 18x18px (small)",
+      "commonIcons": [
+        "back-arrow",
+        "plus-circle-fill",
+        "search",
+        "settings",
+        "calendar",
+        "bell",
+        "checkbox-checked",
+        "checkbox-unchecked",
+        "more-horizontal",
+        "chevron-down"
+      ]
+    }
+  },
+  "layoutAndStructure": {
+    "spacingUnit": "8px",
+    "grid": "4px base grid system",
+    "padding": {
+      "screen": "16px horizontal, 24px vertical",
+      "card": "16px",
+      "button": "14px vertical, 24px horizontal"
+    },
+    "margins": {
+      "betweenSections": "24px",
+      "betweenElements": "12px"
+    },
+    "borderRadius": {
+      "small": "8px",
+      "medium": "12px",
+      "large": "16px",
+      "full": "9999px (for circular elements)"
+    },
+    "elevation": {
+      "shadows": "none",
+      "depth": "Created by varying background colors (surface colors)."
+    }
+  },
+  "componentLibrary": {
+    "buttons": [
+      {
+        "type": "PrimaryAction",
+        "style": "Solid fill with 'primary.main' color, 'large' border-radius, contains 'ButtonText'."
+      },
+      {
+        "type": "SecondaryAction",
+        "style": "Subtle fill with 'surface.light', 'medium' border-radius. Active state has a prominent border."
+      },
+      {
+        "type": "FloatingActionButton (FAB)",
+        "style": "Circular, solid 'primary.main' color, contains a '+' icon."
+      }
+    ],
+    "inputFields": {
+      "style": "Background 'surface.main', 'medium' border-radius, no border by default. Placeholder text uses 'text.placeholder'."
+    },
+    "cards": {
+      "style": "Background 'surface.main', 'large' border-radius, 'card' padding. Used to group related content."
+    },
+    "navigation": {
+      "topBar": "Contains a back arrow, screen title, and optional action icons on the right.",
+      "bottomBar": "May contain primary actions or navigation tabs."
+    },
+    "lists": {
+      "style": "Items are separated by a thin divider or contained within individual cards. Each item has a clear touch target."
+    },
+    "toggles": {
+      "style": "A standard switch/toggle component, uses 'primary.main' for the 'on' state."
+    },
+    "tagsAndPills": {
+      "style": "Rounded rectangular shapes, 'full' border-radius. Active state has a solid fill, inactive is subtle."
+    }
+  }
+}

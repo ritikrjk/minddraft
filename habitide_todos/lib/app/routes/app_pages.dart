@@ -1,0 +1,28 @@
+import 'package:get/get.dart';
+
+import '../modules/home/bindings/home_binding.dart';
+import '../modules/home/bindings/tasks_binding.dart';
+import '../modules/home/bindings/habits_binding.dart';
+import '../modules/home/bindings/notes_binding.dart';
+import '../modules/home/bindings/planner_binding.dart';
+import '../modules/home/views/home_view.dart';
+
+part 'app_routes.dart';
+
+class AppPages {
+  static const INITIAL = Routes.HOME;
+
+  static final routes = [
+    GetPage(
+      name: _Paths.HOME,
+      page: () => HomeView(),
+      bindings: [
+        HomeBinding(),
+        TasksBinding(),
+        HabitsBinding(),
+        NotesBinding(),
+        PlannerBinding(),
+      ],
+    ),
+  ];
+}
