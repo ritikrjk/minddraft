@@ -43,7 +43,7 @@ class Todo {
     return Todo(
       id: map['id'],
       title: map['title'],
-      isDone: map['isDone'] ?? false,
+      isDone: map['isDone'] == 1,
       createdAt: DateTime.parse(map['createdAt']),
       completedAt: map['completedAt'] != null ? DateTime.parse(map['completedAt']) : null,
     );

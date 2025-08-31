@@ -14,6 +14,7 @@ class SQLiteStorageService implements StorageInterface {
   // Table names
   static const String _todosTable = 'todos';
   static const String _habitsTable = 'habits';
+  static const String _habitCompleteTable = 'habit_complete';
   static const String _notesTable = 'notes';
   static const String _plannerTable = 'planner_activities';
 
@@ -42,8 +43,8 @@ class SQLiteStorageService implements StorageInterface {
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         isDone INTEGER NOT NULL DEFAULT 0,
-        createdAt TEXT NOT NULL,
-        completedAt TEXT
+        createdAt INTEGER NOT NULL,
+        completedAt INTEGER
       )
     ''');
 
@@ -53,12 +54,21 @@ class SQLiteStorageService implements StorageInterface {
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         isCompletedToday INTEGER NOT NULL DEFAULT 0,
-        createdAt TEXT NOT NULL,
-        lastCompletedAt TEXT,
+        createdAt INTEGER NOT NULL,
+        lastCompletedAt INTEGER,
         streakCount INTEGER NOT NULL DEFAULT 0,
         completedDates TEXT
       )
     ''');
+
+    await db.execute(''' 
+    CREATE TABLE $_habitCompleteTable (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    habitId TEXT NOT NULL,
+    date INTEGER NOT NULL,
+   FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
+);
+      ''');
 
     // Create notes table
     await db.execute('''
@@ -66,8 +76,8 @@ class SQLiteStorageService implements StorageInterface {
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         content TEXT NOT NULL,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
+        createdAt INTEGER NOT NULL,
+        updatedAt INTEGER NOT NULL
       )
     ''');
 
@@ -76,10 +86,10 @@ class SQLiteStorageService implements StorageInterface {
       CREATE TABLE $_plannerTable (
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
-        startTime TEXT NOT NULL,
-        endTime TEXT NOT NULL,
-        date TEXT NOT NULL,
-        createdAt TEXT NOT NULL,
+        startTime INTEGER NOT NULL,
+        endTime INTEGER NOT NULL,
+        date INTEGER NOT NULL,
+        createdAt INTEGER NOT NULL,
         isCompleted INTEGER NOT NULL DEFAULT 0
       )
     ''');
@@ -92,32 +102,68 @@ class SQLiteStorageService implements StorageInterface {
   // Generic CRUD operations
   @override
   Future<T> create<T>(T item) async {
-    // Implementation depends on type
-    throw UnimplementedError('Use specific create methods');
+    final db = await database;
+    if (item is Habit) {
+      await db.insert(_habitsTable, item.toMap());
+      return item;
+    }
+    throw UnimplementedError('Create method not implemented for this type');
   }
 
   @override
   Future<T?> read<T>(String id) async {
-    // Implementation depends on type
-    throw UnimplementedError('Use specific read methods');
+    final db = await database;
+    if (T == Habit) {
+      final List<Map<String, dynamic>> maps = await db.query(
+        _habitsTable,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      if (maps.isNotEmpty) {
+        return Habit.fromMap(maps.first) as T;
+      }
+      return null;
+    }
+    throw UnimplementedError('Read method not implemented for this type');
   }
 
   @override
   Future<List<T>> readAll<T>() async {
-    // Implementation depends on type
-    throw UnimplementedError('Use specific read methods');
+    final db = await database;
+    if (T == Habit) {
+      final List<Map<String, dynamic>> maps = await db.query(_habitsTable);
+      return List.generate(maps.length, (i) => Habit.fromMap(maps[i])) as List<T>;
+    }
+    throw UnimplementedError('ReadAll method not implemented for this type');
   }
 
   @override
   Future<T> update<T>(T item) async {
-    // Implementation depends on type
-    throw UnimplementedError('Use specific update methods');
+    final db = await database;
+    if (item is Habit) {
+      await db.update(
+        _habitsTable,
+        item.toMap(),
+        where: 'id = ?',
+        whereArgs: [item.id],
+      );
+      return item;
+    }
+    throw UnimplementedError('Update method not implemented for this type');
   }
 
   @override
   Future<bool> delete<T>(String id) async {
-    // Implementation depends on type
-    throw UnimplementedError('Use specific delete methods');
+    final db = await database;
+    if (T == Habit) {
+      final rowsDeleted = await db.delete(
+        _habitsTable,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      return rowsDeleted > 0;
+    }
+    throw UnimplementedError('Delete method not implemented for this type');
   }
 
   // Todo operations
@@ -159,11 +205,7 @@ class SQLiteStorageService implements StorageInterface {
   @override
   Future<void> deleteTodo(String id) async {
     final db = await database;
-    await db.delete(
-      _todosTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete(_todosTable, where: 'id = ?', whereArgs: [id]);
   }
 
   // Habit operations
@@ -205,11 +247,7 @@ class SQLiteStorageService implements StorageInterface {
   @override
   Future<void> deleteHabit(String id) async {
     final db = await database;
-    await db.delete(
-      _habitsTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete(_habitsTable, where: 'id = ?', whereArgs: [id]);
   }
 
   // Note operations
@@ -251,11 +289,7 @@ class SQLiteStorageService implements StorageInterface {
   @override
   Future<void> deleteNote(String id) async {
     final db = await database;
-    await db.delete(
-      _notesTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete(_notesTable, where: 'id = ?', whereArgs: [id]);
   }
 
   // Planner operations
@@ -297,26 +331,24 @@ class SQLiteStorageService implements StorageInterface {
   @override
   Future<void> deletePlannerActivity(String id) async {
     final db = await database;
-    await db.delete(
-      _plannerTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete(_plannerTable, where: 'id = ?', whereArgs: [id]);
   }
 
   // Additional useful methods
-  Future<List<PlannerActivity>> getPlannerActivitiesByDate(DateTime date) async {
+  Future<List<PlannerActivity>> getPlannerActivitiesByDate(
+    DateTime date,
+  ) async {
     final db = await database;
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = startOfDay.add(Duration(days: 1));
-    
+
     final List<Map<String, dynamic>> maps = await db.query(
       _plannerTable,
       where: 'date >= ? AND date < ?',
-      whereArgs: [startOfDay.toIso8601String(), endOfDay.toIso8601String()],
+      whereArgs: [startOfDay.millisecondsSinceEpoch, endOfDay.millisecondsSinceEpoch],
       orderBy: 'startTime ASC',
     );
-    
+
     return List.generate(maps.length, (i) => PlannerActivity.fromMap(maps[i]));
   }
 
@@ -328,7 +360,7 @@ class SQLiteStorageService implements StorageInterface {
       whereArgs: [isDone ? 1 : 0],
       orderBy: 'createdAt DESC',
     );
-    
+
     return List.generate(maps.length, (i) => Todo.fromMap(maps[i]));
   }
 

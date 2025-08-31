@@ -1,36 +1,24 @@
 import 'package:habitide_todos/app/data/models/note_model.dart';
-import 'package:habitide_todos/app/data/providers/database_helper.dart';
+import 'package:habitide_todos/app/data/providers/sqlite_storage_service.dart';
 
 class NoteProvider {
-  final DatabaseHelper _dbHelper;
+  final SQLiteStorageService _dbHelper;
 
   NoteProvider(this._dbHelper);
 
-  Future<int> insertNote(Note note) async {
-    return await _dbHelper.insert('notes', note.toMap());
+  Future<void> insertNote(Note note) async {
+    return await _dbHelper.addNote(note);
   }
 
   Future<List<Note>> getNotes() async {
-    final List<Map<String, dynamic>> maps = await _dbHelper.query('notes');
-    return List.generate(maps.length, (i) {
-      return Note.fromMap(maps[i]);
-    });
+    return await _dbHelper.getNotes();
   }
 
-  Future<int> updateNote(Note note) async {
-    return await _dbHelper.update(
-      'notes',
-      note.toMap(),
-      'id = ?',
-      [note.id],
-    );
+  Future<void> updateNote(Note note) async {
+    return await _dbHelper.updateNote(note);
   }
 
-  Future<int> deleteNote(String id) async {
-    return await _dbHelper.delete(
-      'notes',
-      'id = ?',
-      [id],
-    );
+  Future<void> deleteNote(String id) async {
+    return await _dbHelper.deleteNote(id);
   }
 }

@@ -6,14 +6,15 @@ import '../../../utils/notification_service.dart';
 import 'package:habitide_todos/app/data/models/todo_model.dart';
 
 class TasksView extends GetView<TasksController> {
-  final NotificationService _notificationService = Get.find<NotificationService>();
+  final NotificationService _notificationService =
+      Get.find<NotificationService>();
+
+  TasksView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('To-Do List'),
-      ),
+      appBar: AppBar(title: Text('To-Do List')),
       body: Obx(
         () => ListView.builder(
           itemCount: controller.todos.length,
@@ -32,28 +33,36 @@ class TasksView extends GetView<TasksController> {
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Icon(Icons.delete, color: Colors.white),
               ),
-              child: ListTile(
-                title: Text(
-                  todo.title,
-                  style: TextStyle(
-                    decoration: todo.isDone ? TextDecoration.lineThrough : null,
+              child: Card(
+                child: ListTile(
+                  title: Text(
+                    todo.title,
+                    style: TextStyle(
+                      decoration: todo.isDone
+                          ? TextDecoration.lineThrough
+                          : null,
+                    ),
                   ),
-                ),
-                leading: Checkbox(
-                  value: todo.isDone,
-                  onChanged: (value) {
-                    controller.toggleTodoStatus(todo.id);
+                  leading: Checkbox(
+                    value: todo.isDone,
+                    onChanged: (value) {
+                      controller.toggleTodoStatus(todo.id);
+                    },
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.notifications),
+                    onPressed: () {
+                      _notificationService.showNotification(
+                        int.parse(todo.id.substring(0, 9)),
+                        'Task Reminder',
+                        todo.title,
+                      );
+                    },
+                  ),
+                  onLongPress: () {
+                    _showEditTaskDialog(context, todo);
                   },
                 ),
-                trailing: IconButton(
-                  icon: Icon(Icons.notifications),
-                  onPressed: () {
-                    _notificationService.showNotification(int.parse(todo.id.substring(0, 9)), 'Task Reminder', todo.title);
-                  },
-                ),
-                onLongPress: () {
-                  _showEditTaskDialog(context, todo);
-                },
               ),
             );
           },
@@ -102,7 +111,9 @@ class TasksView extends GetView<TasksController> {
   }
 
   void _showEditTaskDialog(BuildContext context, Todo todo) {
-    final TextEditingController textEditingController = TextEditingController(text: todo.title);
+    final TextEditingController textEditingController = TextEditingController(
+      text: todo.title,
+    );
     showDialog(
       context: context,
       builder: (context) {

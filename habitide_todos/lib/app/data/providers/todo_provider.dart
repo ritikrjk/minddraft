@@ -1,36 +1,24 @@
 import 'package:habitide_todos/app/data/models/todo_model.dart';
-import 'package:habitide_todos/app/data/providers/database_helper.dart';
+import 'package:habitide_todos/app/data/providers/sqlite_storage_service.dart';
 
 class TodoProvider {
-  final DatabaseHelper _dbHelper;
+  final SQLiteStorageService _dbHelper;
 
   TodoProvider(this._dbHelper);
 
-  Future<int> insertTodo(Todo todo) async {
-    return await _dbHelper.insert('todos', todo.toMap());
+  Future<void> insertTodo(Todo todo) async {
+    return await _dbHelper.addTodo(todo);
   }
 
   Future<List<Todo>> getTodos() async {
-    final List<Map<String, dynamic>> maps = await _dbHelper.query('todos');
-    return List.generate(maps.length, (i) {
-      return Todo.fromMap(maps[i]);
-    });
+    return await _dbHelper.getTodos();
   }
 
-  Future<int> updateTodo(Todo todo) async {
-    return await _dbHelper.update(
-      'todos',
-      todo.toMap(),
-      'id = ?',
-      [todo.id],
-    );
+  Future<void> updateTodo(Todo todo) async {
+    return await _dbHelper.updateTodo(todo);
   }
 
-  Future<int> deleteTodo(String id) async {
-    return await _dbHelper.delete(
-      'todos',
-      'id = ?',
-      [id],
-    );
+  Future<void> deleteTodo(String id) async {
+    return await _dbHelper.deleteTodo(id);
   }
 }

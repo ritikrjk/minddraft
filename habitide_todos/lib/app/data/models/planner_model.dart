@@ -70,7 +70,7 @@ class PlannerActivity {
       ),
       date: DateTime.parse(map['date']),
       createdAt: DateTime.parse(map['createdAt']),
-      isCompleted: map['isCompleted'] ?? false,
+      isCompleted: map['isCompleted'] == 1,
     );
   }
 }

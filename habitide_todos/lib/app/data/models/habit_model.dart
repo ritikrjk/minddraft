@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Habit {
   final String id;
   String title;
@@ -15,9 +17,8 @@ class Habit {
     this.lastCompletedAt,
     this.streakCount = 0,
     List<DateTime>? completedDates,
-  }) : 
-    createdAt = createdAt ?? DateTime.now(),
-    completedDates = completedDates ?? [];
+  }) : createdAt = createdAt ?? DateTime.now(),
+       completedDates = completedDates ?? [];
 
   Habit copyWith({
     String? id,
@@ -43,11 +44,12 @@ class Habit {
     return {
       'id': id,
       'title': title,
-      'isCompletedToday': isCompletedToday,
+      'isCompletedToday': isCompletedToday ? 1 : 0,
       'createdAt': createdAt.toIso8601String(),
       'lastCompletedAt': lastCompletedAt?.toIso8601String(),
       'streakCount': streakCount,
-      'completedDates': completedDates.map((date) => date.toIso8601String()).toList(),
+      'completedDates': jsonEncode(
+          completedDates.map((date) => date.toIso8601String()).toList()),
     };
   }
 
@@ -55,13 +57,18 @@ class Habit {
     return Habit(
       id: map['id'],
       title: map['title'],
-      isCompletedToday: map['isCompletedToday'] ?? false,
+      isCompletedToday: map['isCompletedToday'] == 1,
       createdAt: DateTime.parse(map['createdAt']),
-      lastCompletedAt: map['lastCompletedAt'] != null ? DateTime.parse(map['lastCompletedAt']) : null,
+      lastCompletedAt: map['lastCompletedAt'] != null
+          ? DateTime.parse(map['lastCompletedAt'])
+          : null,
       streakCount: map['streakCount'] ?? 0,
-      completedDates: (map['completedDates'] as List<dynamic>?)
-          ?.map((date) => DateTime.parse(date))
-          .toList() ?? [],
+      completedDates: (map['completedDates'] is String
+              ? jsonDecode(map['completedDates']) as List<dynamic>?
+              : map['completedDates'] as List<dynamic>?)
+          ?.map((date) => DateTime.parse(date as String))
+          .toList() ??
+          [],
     );
   }
 }

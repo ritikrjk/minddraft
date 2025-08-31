@@ -1,30 +1,27 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:habitide_todos/main.dart';
+import 'package:get/get.dart';
+import 'package:habitide_todos/app/data/providers/planner_provider.dart';
+import 'package:habitide_todos/app/data/providers/sqlite_storage_service.dart';
+import 'package:habitide_todos/app/modules/home/controllers/home_controller.dart';
+import 'package:habitide_todos/app/modules/home/controllers/planner_controller.dart';
+import 'package:habitide_todos/app/modules/home/views/home_view.dart';
+import 'package:habitide_todos/app/utils/notification_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(Routes.routes);
+  testWidgets('HomeView renders correctly', (WidgetTester tester) async {
+    Get.put(SQLiteStorageService());
+    Get.put(PlannerProvider(Get.find()));
+    Get.put(HomeController());
+    Get.put(NotificationService());
+    Get.put(PlannerController());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      GetMaterialApp(
+        home: HomeView(),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(HomeView), findsOneWidget);
   });
 }
