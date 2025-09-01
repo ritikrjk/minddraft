@@ -18,8 +18,17 @@ class HabitsController extends GetxController {
     habits.value = await _habitProvider.getHabits();
   }
 
-  void addHabit(String title) async {
-    final newHabit = Habit(id: IdGenerator.generateId(), title: title);
+  void addHabit(String title, String? description, String category) async {
+    final newHabit = Habit(
+      id: IdGenerator.generateId(),
+      title: title,
+      description: description,
+      category: category,
+      isCompletedToday: false,
+      createdAt: DateTime.now(),
+      streakCount: 0,
+      completedDates: [],
+    );
     await _habitProvider.insertHabit(newHabit);
     habits.add(newHabit);
   }
@@ -35,8 +44,10 @@ class HabitsController extends GetxController {
     habits.removeWhere((habit) => habit.id == id);
   }
 
-  void updateHabitTitle(Habit habit, String newTitle) async {
+  void updateHabit(Habit habit, String newTitle, String? newDescription, String newCategory) async {
     habit.title = newTitle;
+    habit.description = newDescription;
+    habit.category = newCategory;
     await _habitProvider.updateHabit(habit);
     habits.refresh();
   }

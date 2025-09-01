@@ -98,7 +98,7 @@ class TasksView extends GetView<TasksController> {
             TextButton(
               onPressed: () {
                 if (textEditingController.text.isNotEmpty) {
-                  controller.addTodo(textEditingController.text);
+                  controller.addTodo(textEditingController.text, 'Medium', 'Work');
                   Get.back();
                 }
               },

@@ -9,7 +9,7 @@ import 'storage_interface.dart';
 class SQLiteStorageService implements StorageInterface {
   static Database? _database;
   static const String _databaseName = 'habitide_todos.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 3;
 
   // Table names
   static const String _todosTable = 'todos';
@@ -42,6 +42,10 @@ class SQLiteStorageService implements StorageInterface {
       CREATE TABLE $_todosTable (
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
+        description TEXT,
+        priority TEXT NOT NULL,
+        category TEXT NOT NULL,
+        subtasks TEXT,
         isDone INTEGER NOT NULL DEFAULT 0,
         createdAt INTEGER NOT NULL,
         completedAt INTEGER
@@ -53,6 +57,8 @@ class SQLiteStorageService implements StorageInterface {
       CREATE TABLE $_habitsTable (
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
+        description TEXT,
+        category TEXT NOT NULL,
         isCompletedToday INTEGER NOT NULL DEFAULT 0,
         createdAt INTEGER NOT NULL,
         lastCompletedAt INTEGER,
@@ -96,74 +102,73 @@ class SQLiteStorageService implements StorageInterface {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle future database schema updates
+    if (oldVersion < 2) {
+      try {
+        await db.execute('ALTER TABLE $_habitsTable ADD COLUMN description TEXT');
+      } catch (e) {
+        // Ignore if column already exists
+        // Ignore if column already exists
+      }
+      try {
+        await db.execute('ALTER TABLE $_habitsTable ADD COLUMN category TEXT NOT NULL DEFAULT \'Others\'');
+      } catch (e) {
+        // Ignore if column already exists
+        // Ignore if column already exists
+      }
+    }
+    if (oldVersion < 3) {
+      try {
+        await db.execute('ALTER TABLE $_todosTable ADD COLUMN description TEXT');
+      } catch (e) {
+        // Ignore if column already exists
+      }
+      try {
+        await db.execute('ALTER TABLE $_todosTable ADD COLUMN priority TEXT NOT NULL DEFAULT \'Low\'');
+      } catch (e) {
+        // Ignore if column already exists
+      }
+      try {
+        await db.execute('ALTER TABLE $_todosTable ADD COLUMN category TEXT NOT NULL DEFAULT \'General\'');
+      } catch (e) {
+        // Ignore if column already exists
+      }
+      try {
+        await db.execute('ALTER TABLE $_todosTable ADD COLUMN subtasks TEXT');
+      } catch (e) {
+        // Ignore if column already exists
+      }
+    }
   }
 
   // Generic CRUD operations
   @override
   Future<T> create<T>(T item) async {
-    final db = await database;
-    if (item is Habit) {
-      await db.insert(_habitsTable, item.toMap());
-      return item;
-    }
-    throw UnimplementedError('Create method not implemented for this type');
+    // Implementation depends on type
+    throw UnimplementedError('Use specific create methods');
   }
 
   @override
   Future<T?> read<T>(String id) async {
-    final db = await database;
-    if (T == Habit) {
-      final List<Map<String, dynamic>> maps = await db.query(
-        _habitsTable,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-      if (maps.isNotEmpty) {
-        return Habit.fromMap(maps.first) as T;
-      }
-      return null;
-    }
-    throw UnimplementedError('Read method not implemented for this type');
+    // Implementation depends on type
+    throw UnimplementedError('Use specific read methods');
   }
 
   @override
   Future<List<T>> readAll<T>() async {
-    final db = await database;
-    if (T == Habit) {
-      final List<Map<String, dynamic>> maps = await db.query(_habitsTable);
-      return List.generate(maps.length, (i) => Habit.fromMap(maps[i])) as List<T>;
-    }
-    throw UnimplementedError('ReadAll method not implemented for this type');
+    // Implementation depends on type
+    throw UnimplementedError('Use specific read methods');
   }
 
   @override
   Future<T> update<T>(T item) async {
-    final db = await database;
-    if (item is Habit) {
-      await db.update(
-        _habitsTable,
-        item.toMap(),
-        where: 'id = ?',
-        whereArgs: [item.id],
-      );
-      return item;
-    }
-    throw UnimplementedError('Update method not implemented for this type');
+    // Implementation depends on type
+    throw UnimplementedError('Use specific update methods');
   }
 
   @override
   Future<bool> delete<T>(String id) async {
-    final db = await database;
-    if (T == Habit) {
-      final rowsDeleted = await db.delete(
-        _habitsTable,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-      return rowsDeleted > 0;
-    }
-    throw UnimplementedError('Delete method not implemented for this type');
+    // Implementation depends on type
+    throw UnimplementedError('Use specific delete methods');
   }
 
   // Todo operations

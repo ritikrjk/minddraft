@@ -1,3 +1,4 @@
+
 import 'package:habitide_todos/app/data/models/habit_model.dart';
 import 'package:habitide_todos/app/data/providers/sqlite_storage_service.dart';
 
@@ -7,18 +8,18 @@ class HabitProvider {
   HabitProvider(this._dbHelper);
 
   Future<void> insertHabit(Habit habit) async {
-    await _dbHelper.create<Habit>(habit);
+    return await _dbHelper.addHabit(habit);
   }
 
   Future<List<Habit>> getHabits() async {
-    return await _dbHelper.readAll<Habit>();
+    return await _dbHelper.getHabits();
   }
 
   Future<void> updateHabit(Habit habit) async {
-    await _dbHelper.update<Habit>(habit);
+    return await _dbHelper.updateHabit(habit);
   }
 
   Future<void> deleteHabit(String id) async {
-    await _dbHelper.delete<Habit>(id);
+    return await _dbHelper.deleteHabit(id);
   }
 }

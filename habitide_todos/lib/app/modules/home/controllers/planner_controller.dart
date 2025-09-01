@@ -26,6 +26,8 @@ class PlannerController extends GetxController {
       startTime: startTime,
       endTime: endTime,
       date: date,
+      createdAt: DateTime.now(),
+      isCompleted: false,
     );
     await _plannerProvider.insertPlannerActivity(newActivity);
     activities.add(newActivity);

@@ -40,8 +40,11 @@ dependencies:
   # Database dependencies
   sqflite: ^2.3.2
   path: ^1.9.0
+  json_annotation: ^4.9.0
 
 dev_dependencies:
+  build_runner: 
+  json_serializable: 
   flutter_test:
     sdk: flutter
 

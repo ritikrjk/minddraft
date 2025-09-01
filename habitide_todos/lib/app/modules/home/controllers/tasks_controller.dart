@@ -22,10 +22,14 @@ class TasksController extends GetxController {
     }
   }
 
-  void addTodo(String title) async {
+  void addTodo(String title, String priority, String category) async {
     final todo = Todo(
       id: IdGenerator.generateId(),
       title: title,
+      priority: priority,
+      category: category,
+      isDone: false,
+      createdAt: DateTime.now(),
     );
     await _todoProvider.insertTodo(todo);
     todos.add(todo);
